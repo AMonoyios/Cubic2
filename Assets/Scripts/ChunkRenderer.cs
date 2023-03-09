@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
-public class ChunkRenderer : MonoBehaviour
+public sealed class ChunkRenderer : MonoBehaviour
 {
     private MeshFilter meshFilter;
     private MeshCollider meshCollider;
@@ -14,7 +14,7 @@ public class ChunkRenderer : MonoBehaviour
     [SerializeField]
     private bool showGizmos = false;
 
-    public ChunkData ChunkData { get; }
+    public ChunkData ChunkData { get; private set; }
 
     public bool ModifiedByPlayer
     {
@@ -33,6 +33,11 @@ public class ChunkRenderer : MonoBehaviour
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
         mesh = meshFilter.mesh;
+    }
+
+    public void Init(ChunkData chunkData)
+    {
+        ChunkData = chunkData;
     }
 
     private void RenderMesh(MeshData meshData)

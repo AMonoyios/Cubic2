@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshData
+public sealed class MeshData
 {
     public List<Vector3> vertices = new();
     public List<int> triangles = new();

@@ -50,6 +50,32 @@ public static class Chunk
         return height >= 0 && height < chunkData.Height;
     }
 
+    public static Vector3Int GetBlockInChunkPosition(this ChunkData chunkData, Vector3Int position)
+    {
+        return position - chunkData.Position;
+    }
+
+    public static BlockType GetBlockFromChunkPosition(this ChunkData chunkData, Vector3Int position)
+    {
+        if (InChunkRange(chunkData, position))
+        {
+            int index = GetIndexFromPosition(chunkData, position);
+            return chunkData.blocks[index];
+        }
+
+        return chunkData.World.GetBlockFromChunk(chunkData.Position + position);
+    }
+
+    public static Vector3Int GetChunkPositionFromBlock(Vector3Int position)
+    {
+        return new
+        (
+            x: Mathf.FloorToInt(position.x / (float)World.Instance.Size) * World.Instance.Size,
+            y: Mathf.FloorToInt(position.y / (float)World.Instance.Height) * World.Instance.Height,
+            z: Mathf.FloorToInt(position.z / (float)World.Instance.Size) * World.Instance.Size
+        );
+    }
+
     public static void SetBlock(this ChunkData chunkData, Vector3Int position, BlockType block)
     {
         if (InChunkRange(chunkData, position))
@@ -59,30 +85,25 @@ public static class Chunk
         }
     }
 
-    public static Vector3Int GetBlockInChunk(this ChunkData chunkData, Vector3Int position)
-    {
-        return new
-        (
-            x: position.x - chunkData.Position.x,
-            y: position.y - chunkData.Position.y,
-            z: position.z - chunkData.Position.z
-        );
-    }
-
-    public static BlockType GetBlockFromChunk(this ChunkData chunkData, Vector3Int position)
-    {
-        if (InChunkRange(chunkData, position))
-        {
-            int index = GetIndexFromPosition(chunkData, position);
-            return chunkData.blocks[index];
-        }
-
-        throw new Exception("Block type is not in chunk range.");
-    }
-
     public static MeshData GetChunkMeshData(this ChunkData chunkData)
     {
         MeshData meshData = new(true);
+
+        LoopThroughTheBlocks
+        (
+            chunkData,
+            (position) => meshData = BlockHelper.GetMeshData
+                (
+                    chunkData,
+                    position,
+                    meshData,
+                    chunkData.blocks[GetIndexFromPosition
+                        (
+                            chunkData,
+                            position
+                        )]
+                )
+        );
 
         return meshData;
     }

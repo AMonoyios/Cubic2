@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Block Data", menuName = "Tools/New Block Data")]
+[CreateAssetMenu(fileName = "Blocks Data", menuName = "Tools/New Block Data")]
 public class BlockDataScriptableObject : ScriptableObject
 {
     public Vector2 textureSize;
@@ -10,7 +10,7 @@ public class BlockDataScriptableObject : ScriptableObject
 [System.Serializable]
 public class TextureData
 {
-    public BlockType type = BlockType.Null;
+    public BlockType type = BlockType.Air;
     public Vector2Int up, down, side;
     public bool isSolid = true;
     public bool isCollidable = true;
