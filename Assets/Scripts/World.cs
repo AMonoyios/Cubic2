@@ -33,9 +33,9 @@ public sealed class World : MonoSingleton<World>
 
         for (int x = 0; x < worldInChunks; x++)
         {
-            for (int y = 0; y < worldInChunks; y++)
+            for (int z = 0; z < worldInChunks; z++)
             {
-                ChunkData chunkData = new(chunkSize, chunkHeight, this, new(x * chunkSize, 0, y * chunkSize));
+                ChunkData chunkData = new(chunkSize, chunkHeight, this, new(x * chunkSize, 0, z * chunkSize));
 
                 GenerateVoxels(chunkData);
                 chunkDataDictionary.Add(chunkData.Position, chunkData);

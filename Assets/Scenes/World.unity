@@ -497,10 +497,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffab74aabbea1cd45a9b0881a5095c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldInChunks: 16
+  worldInChunks: 6
   chunkSize: 16
-  chunkHeight: 128
-  waterLevel: 64
+  chunkHeight: 100
+  waterLevel: 39
   noiseScale: 0.03
   chunkPrefab: {fileID: 3645557890450883505, guid: cc467ccfd4eb33f45a6318232b4b42ca,
     type: 3}

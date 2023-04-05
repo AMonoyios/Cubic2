@@ -18,9 +18,9 @@ public static class BlockHelper
     {
         return direction switch
         {
-            Direction.up => BlockDataManager.BlocksTextureDataDictionary[blockType].up,
-            Direction.down => BlockDataManager.BlocksTextureDataDictionary[blockType].down,
-            _ => BlockDataManager.BlocksTextureDataDictionary[blockType].side
+            Direction.up => BlockDataManager.BlocksTextureDataDict[blockType].up,
+            Direction.down => BlockDataManager.BlocksTextureDataDict[blockType].down,
+            _ => BlockDataManager.BlocksTextureDataDict[blockType].side
         };
     }
 
@@ -59,7 +59,7 @@ public static class BlockHelper
     public static void GetFaceVertices(Direction direction, Vector3Int position, MeshData meshData, BlockType blockType)
     {
         const float verticeOffset = 0.5f;
-        bool hasColliders = BlockDataManager.BlocksTextureDataDictionary[blockType].isCollidable;
+        bool hasColliders = BlockDataManager.BlocksTextureDataDict[blockType].isCollidable;
 
         switch (direction)
         {
@@ -126,7 +126,7 @@ public static class BlockHelper
             Vector3Int neighbourBlockPosition = position + direction.GetVector();
             BlockType neighbourBlockType = chunk.GetBlockFromChunkPosition(neighbourBlockPosition);
 
-            if (neighbourBlockType != BlockType.Air && !BlockDataManager.BlocksTextureDataDictionary[neighbourBlockType].isSolid)
+            if (neighbourBlockType != BlockType.Air && !BlockDataManager.BlocksTextureDataDict[neighbourBlockType].isSolid)
             {
                 if (blockType == BlockType.Water)
                 {
@@ -149,7 +149,7 @@ public static class BlockHelper
     {
         GetFaceVertices(direction, position, meshData, blockType);
 
-        meshData.AddQuadTriangles(BlockDataManager.BlocksTextureDataDictionary[blockType].isCollidable);
+        meshData.AddQuadTriangles(BlockDataManager.BlocksTextureDataDict[blockType].isCollidable);
         meshData.uvs.AddRange(FaceUVs(direction, blockType));
 
         return meshData;

@@ -11,7 +11,6 @@ public sealed class MeshData
     public List<int> collidableTriangles = new();
 
     public MeshData waterMeshData;
-    private readonly bool isMainMeshData = true;
 
     public MeshData(bool isMainMeshData)
     {
