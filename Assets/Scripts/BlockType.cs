@@ -1,5 +1,6 @@
 public enum BlockType
 {
+    Null,
     Air,
     GrassyDirt,
     Dirt,

@@ -11,6 +11,7 @@ public sealed class MeshData
     public List<int> collidableTriangles = new();
 
     public MeshData waterMeshData;
+    private bool isMainMesh = true;
 
     public MeshData(bool isMainMeshData)
     {
@@ -20,16 +21,16 @@ public sealed class MeshData
         }
     }
 
-    public void AddVertex(Vector3 vertex, bool hasCollision)
+    public void AddVertex(Vector3 vertex, bool generatesCollider)
     {
         vertices.Add(vertex);
-        if (hasCollision)
+        if (generatesCollider)
         {
             collidableVertices.Add(vertex);
         }
     }
 
-    public void AddQuadTriangles(bool hasCollision)
+    public void AddQuadTriangles(bool generatesCollider)
     {
         triangles.Add(vertices.Count - 4);
         triangles.Add(vertices.Count - 3);
@@ -39,7 +40,7 @@ public sealed class MeshData
         triangles.Add(vertices.Count - 2);
         triangles.Add(vertices.Count - 1);
 
-        if (hasCollision)
+        if (generatesCollider)
         {
             collidableTriangles.Add(collidableVertices.Count - 4);
             collidableTriangles.Add(collidableVertices.Count - 3);

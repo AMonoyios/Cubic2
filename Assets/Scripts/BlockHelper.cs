@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class BlockHelper
 {
-    private static Direction[] directions =
+    private static readonly Direction[] directions =
     {
         Direction.back,
         Direction.down,
@@ -38,13 +36,13 @@ public static class BlockHelper
         uvs[1] = new
         (
             x: (BlockDataManager.TileSize.x * tilePosition.x) + BlockDataManager.TileSize.x - BlockDataManager.TextureOffset,
-            y: (BlockDataManager.TileSize.y * tilePosition.y) + BlockDataManager.TextureOffset - BlockDataManager.TextureOffset
+            y: (BlockDataManager.TileSize.y * tilePosition.y) + BlockDataManager.TileSize.y - BlockDataManager.TextureOffset
         );
 
         uvs[2] = new
         (
             x: (BlockDataManager.TileSize.x * tilePosition.x) + BlockDataManager.TextureOffset,
-            y: (BlockDataManager.TileSize.y * tilePosition.y) + BlockDataManager.TextureOffset - BlockDataManager.TextureOffset
+            y: (BlockDataManager.TileSize.y * tilePosition.y) + BlockDataManager.TileSize.y - BlockDataManager.TextureOffset
         );
 
         uvs[3] = new
@@ -116,7 +114,7 @@ public static class BlockHelper
 
     public static MeshData GetMeshData(ChunkData chunk, Vector3Int position, MeshData meshData, BlockType blockType)
     {
-        if (blockType == BlockType.Air)
+        if (blockType == BlockType.Air || blockType == BlockType.Null)
         {
             return meshData;
         }
@@ -124,20 +122,20 @@ public static class BlockHelper
         foreach (Direction direction in directions)
         {
             Vector3Int neighbourBlockPosition = position + direction.GetVector();
-            BlockType neighbourBlockType = chunk.GetBlockFromChunkPosition(neighbourBlockPosition);
+            BlockType neighbourBlockType = Chunk.GetBlockFromChunkCoordinates(chunk, neighbourBlockPosition);
 
-            if (neighbourBlockType != BlockType.Air && !BlockDataManager.BlocksTextureDataDict[neighbourBlockType].isSolid)
+            if (neighbourBlockType != BlockType.Null && !BlockDataManager.BlocksTextureDataDict[neighbourBlockType].isSolid)
             {
                 if (blockType == BlockType.Water)
                 {
                     if (neighbourBlockType == BlockType.Air)
                     {
-                        meshData.waterMeshData = GetFaceData(direction, chunk, position, meshData.waterMeshData, blockType);
+                        meshData.waterMeshData = GetFaceData(direction, position, meshData.waterMeshData, blockType);
                     }
-                    else
-                    {
-                        meshData = GetFaceData(direction, chunk, position, meshData, blockType);
-                    }
+                }
+                else
+                {
+                    meshData = GetFaceData(direction, position, meshData, blockType);
                 }
             }
         }
@@ -145,7 +143,7 @@ public static class BlockHelper
         return meshData;
     }
 
-    public static MeshData GetFaceData(Direction direction, ChunkData chunk, Vector3Int position, MeshData meshData, BlockType blockType)
+    public static MeshData GetFaceData(Direction direction, Vector3Int position, MeshData meshData, BlockType blockType)
     {
         GetFaceVertices(direction, position, meshData, blockType);
 

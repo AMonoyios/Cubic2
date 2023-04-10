@@ -10,7 +10,7 @@ public class BlockDataScriptableObject : ScriptableObject
 [System.Serializable]
 public class TextureData
 {
-    public BlockType type = BlockType.Air;
+    public BlockType type = BlockType.Null;
     public Vector2Int up, down, side;
     public bool isSolid = true;
     public bool isCollidable = true;

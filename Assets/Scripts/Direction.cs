@@ -1,8 +1,8 @@
 public enum Direction
 {
-    front,    // +z
+    front,      // +z
     right,      // +x
-    back,  // -z
+    back,       // -z
     left,       // -x
     up,         // +y
     down        // -y

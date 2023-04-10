@@ -1,6 +1,6 @@
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -64,7 +64,7 @@ public sealed class ChunkRenderer : MonoBehaviour
 
     public void UpdateChunk()
     {
-        RenderMesh(ChunkData.GetChunkMeshData());
+        RenderMesh(Chunk.GetChunkMeshData(ChunkData));
     }
 
     public void UpdateChunk(MeshData meshData)

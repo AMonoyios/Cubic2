@@ -4,14 +4,17 @@ using UnityEngine;
 
 public sealed class World : MonoSingleton<World>
 {
+    [Header("World properties")]
     [SerializeField]
     private ushort worldInChunks = 16;
+
+    [Header("Chunk properties")]
     [SerializeField]
-    private ushort chunkSize = 16;
-    public ushort Size => chunkSize;
+    private ushort size = 16;
+    public ushort Size => size;
     [SerializeField]
-    private ushort chunkHeight = 128;
-    public ushort Height => chunkHeight;
+    private ushort height = 128;
+    public ushort Height => height;
     [SerializeField]
     private ushort waterLevel = 64;
     [SerializeField]
@@ -19,8 +22,8 @@ public sealed class World : MonoSingleton<World>
     [SerializeField]
     private GameObject chunkPrefab;
 
-    private Dictionary<Vector3Int, ChunkData> chunkDataDictionary = new();
-    private Dictionary<Vector3Int, ChunkRenderer> chunkRendererDictionary = new();
+    private readonly Dictionary<Vector3Int, ChunkData> chunkDataDictionary = new();
+    private readonly Dictionary<Vector3Int, ChunkRenderer> chunkRendererDictionary = new();
 
     public void GenerateWorld()
     {
@@ -35,71 +38,73 @@ public sealed class World : MonoSingleton<World>
         {
             for (int z = 0; z < worldInChunks; z++)
             {
-                ChunkData chunkData = new(chunkSize, chunkHeight, this, new(x * chunkSize, 0, z * chunkSize));
+                ChunkData chunkData = new(size, height, this, new(x * size, 0, z * size));
 
                 GenerateVoxels(chunkData);
-                chunkDataDictionary.Add(chunkData.Position, chunkData);
+                chunkDataDictionary.Add(chunkData.WorldPosition, chunkData);
             }
         }
 
         foreach (ChunkData chunkData in chunkDataDictionary.Values)
         {
-            MeshData meshData = chunkData.GetChunkMeshData();
-            GameObject chunkGameObject = Instantiate(chunkPrefab, chunkData.Position, Quaternion.identity);
+            MeshData meshData = Chunk.GetChunkMeshData(chunkData);
+            GameObject chunkGameObject = Instantiate(chunkPrefab, chunkData.WorldPosition, Quaternion.identity, transform);
             ChunkRenderer chunkRenderer = chunkGameObject.GetComponent<ChunkRenderer>();
 
-            chunkRendererDictionary.Add(chunkData.Position, chunkRenderer);
+            chunkRendererDictionary.Add(chunkData.WorldPosition, chunkRenderer);
 
             chunkRenderer.Init(chunkData);
             chunkRenderer.UpdateChunk(meshData);
         }
-    }
 
-    private void GenerateVoxels(ChunkData chunkData)
-    {
-        for (int x = 0; x < chunkData.Size; x++)
+        void GenerateVoxels(ChunkData chunkData)
         {
-            for (int z = 0; z < chunkData.Size; z++)
+            for (int x = 0; x < chunkData.Size; x++)
             {
-                float noiseValue = Mathf.PerlinNoise((chunkData.Position.x + x) * noiseScale, (chunkData.Position.z + z) * noiseScale);
-                int groundPosition = Mathf.RoundToInt(noiseValue * chunkHeight);
-
-                for (int y = 0; y < chunkHeight; y++)
+                for (int z = 0; z < chunkData.Size; z++)
                 {
-                    BlockType blockType = BlockType.Dirt;
-                    if (y > groundPosition)
-                    {
-                        if (y < waterLevel)
-                        {
-                            blockType = BlockType.Water;
-                        }
-                        else
-                        {
-                            blockType = BlockType.Air;
-                        }
-                    }
-                    else if (y == groundPosition)
-                    {
-                        blockType = BlockType.GrassyDirt;
-                    }
+                    float noiseValue = Mathf.PerlinNoise((chunkData.WorldPosition.x + x) * noiseScale, (chunkData.WorldPosition.z + z) * noiseScale);
+                    int groundPosition = Mathf.RoundToInt(noiseValue * height);
 
-                    chunkData.SetBlock(new(x, y, z), blockType);
+                    for (int y = 0; y < height; y++)
+                    {
+                        // World generation logic here
+
+                        BlockType blockType = BlockType.Dirt;
+                        if (y > groundPosition)
+                        {
+                            if (y < waterLevel)
+                            {
+                                blockType = BlockType.Water;
+                            }
+                            else
+                            {
+                                blockType = BlockType.Air;
+                            }
+                        }
+                        else if (y == groundPosition)
+                        {
+                            blockType = BlockType.GrassyDirt;
+                        }
+
+                        Chunk.SetBlock(chunkData, new(x, y, z), blockType);
+                    }
                 }
             }
         }
     }
 
-    public BlockType GetBlockFromChunk(Vector3Int position)
+    public BlockType GetBlockFromChunkCoordinates(Vector3Int position)
     {
-        Vector3Int pos = Chunk.GetChunkPositionFromBlock(position);
+        Vector3Int pos = Chunk.GetPositionFromBlockCoordinates(position);
 
-        chunkDataDictionary.TryGetValue(pos, out ChunkData chunk);
-        if (chunk == null)
+        chunkDataDictionary.TryGetValue(pos, out ChunkData containerChunk);
+        if (containerChunk == null)
         {
-            return BlockType.Air;
+            return BlockType.Null;
         }
-        Vector3Int chunkPositionOfBlock = chunk.GetBlockInChunkPosition(position);
+        Vector3Int chunkPositionOfBlock = Chunk.GetBlockInChunkCoordinates(containerChunk, position);
 
-        return chunk.GetBlockFromChunkPosition(chunkPositionOfBlock);
+        return Chunk.GetBlockFromChunkCoordinates(containerChunk, chunkPositionOfBlock);
     }
 }
